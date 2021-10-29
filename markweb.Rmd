@@ -1,0 +1,66 @@
+---
+title: "newMark"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## HW4
+
+
+```{r}
+install.packages("countrycode")
+
+library(countrycode)
+library(tidyverse)
+library(here)
+library(sf)
+library(janitor)
+library(plotly)
+library(tmap)
+library(tmaptools)
+```
+
+## read
+
+
+```{r pressure}
+Index <- read_csv(here::here( "GII.csv"),
+                locale = locale(encoding = "latin1"),
+                na = "..", skip=0)
+
+
+myshp <- st_read(here("World_Countries_(Generalized)","World_Countries__Generalized_.shp"))
+
+```
+
+
+## Clean and columns
+
+```{r}
+Indexcols<- Index %>%
+  clean_names()%>%
+  select(country, x2019, x2010)%>%
+  mutate(difference=x2019-x2010)%>%
+  slice(1:189,)%>%
+  mutate(iso_code=countrycode(country, origin = 'country.name', destination = 'iso2c'))
+
+
+```
+
+## Join
+
+```{r}
+Join_HDI <- myshp %>% 
+  clean_names() %>%
+  left_join(., 
+            Indexcols,
+            by = c("aff_iso" = "iso_code"))
+```
+
+```{r}
+
+```
+
